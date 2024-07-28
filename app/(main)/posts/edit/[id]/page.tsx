@@ -2,13 +2,14 @@
 
 import BackButton from "@/components/BackButton";
 import * as z from "zod";
-//import { useForm } from "react-hook-form/dist";
+import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Form, FormControl, FormField, FormItem, FormMessage, FormLabel, FormDescription } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Textarea} from "@/components/ui/textarea";
 import { Button} from "@/components/ui/button";
 import posts from "@/data/posts";
+import { useToast } from "@/components/ui/use-toast";
 
 const formSchema = z.object({
     title: z.string().min(1, {
@@ -31,6 +32,8 @@ interface PostEditPageProps {
     }
 }
 const PostEditPage = ({params}: PostEditPageProps) => {
+    const { toast } = useToast();
+
     const post = posts.find((post) => post.id === params.id);
 
     const form = useForm<z.infer<typeof formSchema>>({
@@ -45,8 +48,11 @@ const PostEditPage = ({params}: PostEditPageProps) => {
     //console.log(post);
 
     const handleSubmit = (data: z.infer<typeof formSchema>) => {
-        console.log(data)
-    }
+        toast({
+            title: "Post has been updated successfully",
+            description: `Updated by ${post?.author} on ${post?.date}`,
+        });
+    };
 
     return ( 
         <>
@@ -80,16 +86,35 @@ const PostEditPage = ({params}: PostEditPageProps) => {
     <FormItem>
       <FormLabel className="uppercase text-cs font-bold text-zinc-500
       dark:text-secondary/70">
-      Title</FormLabel>
+      Body</FormLabel>
       <FormControl>
         <Textarea className="bg-slate-100 dark:bg-slate-500 border-0 focus-visible:ring-0
         text-black dark:text-white focus-visible: ring-offset-0"
-        placeholder="Enter Title" {...field} />
+        placeholder="Enter Body" {...field} />
       </FormControl>
       <FormMessage />
     </FormItem>
   )}
 />
+<FormField
+  control={form.control}
+  name="date"
+  render={({ field }) => (
+    <FormItem>
+      <FormLabel className="uppercase text-cs font-bold text-zinc-500
+      dark:text-secondary/70">
+      Date</FormLabel>
+      <FormControl>
+        <Textarea className="bg-slate-100 dark:bg-slate-500 border-0 focus-visible:ring-0
+        text-black dark:text-white focus-visible: ring-offset-0"
+        placeholder="Enter Date" {...field} />
+      </FormControl>
+      <FormMessage />
+    </FormItem>
+  )}
+/>
+<Button className="w-full dark:bg-slate-800 
+dark: text-white">Update Post</Button>
                 </form>
             </Form>
         </> 
